@@ -1,0 +1,18 @@
+<assembly>
+   <id>jaxws</id>
+   <formats>
+      <format>jar</format>
+   </formats>
+   <includeBaseDirectory>false</includeBaseDirectory>
+   <fileSets>
+      <fileSet>
+         <directory>target/classes</directory>
+         <outputDirectory>/</outputDirectory>
+         <includes>
+            <include>WURFLDeviceService.wsdl</include>
+            <include>net/**</include>
+         </includes>
+      </fileSet>
+   </fileSets>
+</assembly>
+
