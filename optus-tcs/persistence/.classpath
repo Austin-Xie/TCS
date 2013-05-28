@@ -28,5 +28,6 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/opt/appstore/squirrel-sql-3.5.0/JDBC_Drivers/ojdbc5.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

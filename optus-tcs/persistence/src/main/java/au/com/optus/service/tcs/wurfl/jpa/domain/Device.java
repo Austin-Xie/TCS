@@ -14,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity
 @Audited
@@ -51,7 +52,7 @@ public class Device extends AbstractEntity {
 	@Column(name="last_updated_time")
 	private Calendar lastUpdatedTime;
 
-	@Column(name="last_updat_source")
+	@Column(name="last_update_source")
 	private String lastUpdateSource;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -59,7 +60,8 @@ public class Device extends AbstractEntity {
 	private final Set<Group> groups = new HashSet<Group> ();
 
 	@ManyToOne (fetch=FetchType.LAZY)
-	@JoinColumn(name = "wourfl_source_id")
+	@JoinColumn(name = "wurfl_source_id")
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	private WurflSource wurflSource;
 
 	public String getDeviceId() {

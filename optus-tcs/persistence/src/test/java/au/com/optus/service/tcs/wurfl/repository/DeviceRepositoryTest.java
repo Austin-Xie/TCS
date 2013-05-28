@@ -33,7 +33,22 @@ public class DeviceRepositoryTest {
 			System.out.println("device loaded");
 		}
 
-		Device device = repository.save(new Device());
-		System.out.println(device);
+		Long id = 0L;
+		try {
+			Device device2 = new Device();
+			System.out.println("id = " + device2.getId());
+			device2.setUserAgent("xieweiy");
+			Device device = repository.save(device2);
+			repository.flush();
+			System.out.println(device.getUserAgent());
+			id = device.getId();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
+		Device findOne = repository.findOne(id);
+		System.out.println("findOne id = " + findOne.getUserAgent());
+
+
 	}
 }
