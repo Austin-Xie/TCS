@@ -55,22 +55,12 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-commons-core</artifactId>
-			<version>1.4.1.RELEASE</version>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-commons</artifactId>
-			<version>1.5.1.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-mongodb</artifactId>
-			<version>1.2.1.RELEASE</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.springframework.data</groupId> <artifactId>spring-data-commons-core</artifactId> 
+			<version>1.4.1.RELEASE</version> </dependency> -->
+		<!-- <dependency> <groupId>org.springframework.data</groupId> <artifactId>spring-data-commons</artifactId> 
+			<version>1.5.1.RELEASE</version> </dependency> <dependency> <groupId>org.springframework.data</groupId> 
+			<artifactId>spring-data-mongodb</artifactId> <version>1.2.1.RELEASE</version> 
+			</dependency> -->
 
 
 		<!-- Hibernate -->
@@ -99,11 +89,16 @@
 		</dependency>
 
 
-
 		<!-- Ehcache -->
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-core</artifactId>
+		</dependency>
+
+        <!-- org.json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
 		</dependency>
 
 		<dependency>

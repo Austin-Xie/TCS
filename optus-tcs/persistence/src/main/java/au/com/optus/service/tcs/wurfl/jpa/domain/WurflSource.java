@@ -1,5 +1,6 @@
 package au.com.optus.service.tcs.wurfl.jpa.domain;
 
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import javax.persistence.Table;
 @Table(name = "Wurfl_Source")
 public class WurflSource extends AbstractEntity {
 
+	@Column(name = "source_name")
 	private String sourceName;
 
 	private String memo;
@@ -26,6 +28,9 @@ public class WurflSource extends AbstractEntity {
 	private byte[] sourceData;
 
 	private String updater;
+
+	@Column(name = "UPDATED_TIME")
+	private Calendar updatedTime;
 
 	@Column(name = "source_type")
 	private String sourceType;
@@ -76,6 +81,14 @@ public class WurflSource extends AbstractEntity {
 
 	public Set<Device> getDevices() {
 		return devices;
+	}
+
+	public Calendar getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Calendar updatedTime) {
+		this.updatedTime = updatedTime;
 	}
 
 }

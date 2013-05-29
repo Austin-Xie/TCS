@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -40,11 +41,11 @@ public class Group extends AbstractEntity {
 	private Calendar lastUpdatedTime;
 
 	@ManyToOne
-	@JoinColumn(name="device_id")
 	private Device device;
 
-	@OneToMany
-	@JoinColumn(name = "group_id")
+	@OneToMany(fetch=FetchType.EAGER, orphanRemoval=true)
+	@JoinTable(name = "Wurfl_Group_Capability", joinColumns = @JoinColumn(name = "Wurfl_Group_id", referencedColumnName="id"),
+	inverseJoinColumns = @JoinColumn(name = "Wurfl_Capability_id", referencedColumnName="id"))
 	private final Set<Capability> capabilities = new HashSet<Capability> ();
 
 	public String getGroupId() {
@@ -105,6 +106,47 @@ public class Group extends AbstractEntity {
 
 	public Set<Capability> getCapabilities() {
 		return capabilities;
+	}
+
+	public Set<Capability> addCapability(Capability capability) {
+		capabilities.add(capability);
+		return capabilities;
+	}
+
+	public Set<Capability> removeCapability(Capability capability) {
+		capabilities.remove(capability);
+		return capabilities;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((device == null) ? 0 : device.hashCode());
+		result = prime * result + ((groupId == null) ? 0 : groupId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Group other = (Group) obj;
+		if (device == null) {
+			if (other.device != null)
+				return false;
+		} else if (!device.equals(other.device))
+			return false;
+		if (groupId == null) {
+			if (other.groupId != null)
+				return false;
+		} else if (!groupId.equals(other.groupId))
+			return false;
+		return true;
 	}
 
 }
