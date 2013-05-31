@@ -13,7 +13,7 @@ http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
 	<context:property-placeholder location="classpath:db.properties" />
 	
-	<context:component-scan base-package="au.com.optus.service.tcs.wurfl.service" />
+	<context:component-scan base-package="au.com.optus.service.tcs.wurfl" />
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
@@ -38,6 +38,14 @@ http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 				<!-- <property name="generateDdl" value="true" /> -->
 			</bean>
 		</property>
+		<!-- <property name="jpaProperties">
+            <value>
+                hibernate.cache.use_second_level_cache = true
+                hibernate.cache.region.factory_class = org.hibernate.cache.ehcache.EhCacheRegionFactory
+                hibernate.cache.use_query_cache = true
+                hibernate.generate_statistics = true
+            </value>
+        </property> -->
 	</bean>
 
 

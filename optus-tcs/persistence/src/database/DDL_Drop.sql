@@ -1,4 +1,4 @@
-
+Copy of DDL_Schemal.sql
 DROP TABLE Application_Capability;
 
 DROP TABLE Application;

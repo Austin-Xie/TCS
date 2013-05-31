@@ -15,6 +15,7 @@ import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import au.com.optus.service.tcs.wurfl.jpa.dao.DeviceDao;
 import au.com.optus.service.tcs.wurfl.jpa.domain.Device;
 import au.com.optus.service.tcs.wurfl.jpa.domain.Group;
 import au.com.optus.service.tcs.wurfl.jpa.domain.WurflSource;
@@ -24,7 +25,6 @@ import au.com.optus.service.tcs.wurfl.repository.GroupRepository;
 import au.com.optus.service.tcs.wurfl.repository.WurflSourceRepository;
 
 @Service
-//@Transactional
 public class WurflDataRefreshService {
 
 	@Autowired
@@ -41,6 +41,9 @@ public class WurflDataRefreshService {
 
 	@Autowired
 	WurflSourceRepository wurflSourcerepository;
+
+	@Autowired
+	DeviceDao deviceDao;
 
 	public JSONObject xmlToJson(InputStreamReader xmlStream, String sourceName)
 			throws IOException, JSONException {
@@ -103,6 +106,7 @@ public class WurflDataRefreshService {
 		return jsonDevices;
 	}
 
+	//	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void refreshWurflData(InputStreamReader xmlStream, String sourceName)
 			throws IOException, JSONException {
 		JSONObject jsonWurfl = this.xmlToJson(xmlStream, sourceName);
@@ -116,14 +120,22 @@ public class WurflDataRefreshService {
 		JSONArray jsonDeviceArray = jsonWurfl.getJSONObject("wurfl").optJSONObject("devices").optJSONArray("device");
 		List<Device> devices = new ArrayList<Device>();
 		for (int i = 0; i < jsonDeviceArray.length(); i++) {
-			Device device = wurflFactory.createDevice(jsonDeviceArray.getJSONObject(i), ws);
+			JSONObject jsonDevice = jsonDeviceArray.getJSONObject(i);
+			Device device = wurflFactory.createDevice(jsonDevice, ws);
+			device = deviceRepository.saveAndFlush(device);
+			refreshDeviceByGroups(device, jsonDevice);
 			assert device != null;
-			devices.add(device);
+			//			devices.add(device);
+			//			refreshDevice(device);
+			//			device.getGroups().clear();
+			//			deviceDao.createEntity(device);
+			//			System.out.println("device idd = " + device.getId());
+
 
 		}
 
-		deviceRepository.save(devices);
-		deviceRepository.flush();
+		//		deviceRepository.save(devices);
+		//		deviceRepository.flush();
 
 		//		List<Group> groups = new ArrayList<Group> ();
 		//		for (Device d1 : devices) {
@@ -132,6 +144,45 @@ public class WurflDataRefreshService {
 		//		}
 		//
 		//		refreshDeviceGroups(groups);
+	}
+
+	public void refreshDeviceByGroups(Device device, JSONObject jsonDevice) throws JSONException {
+		if (jsonDevice.has("group")) {
+			JSONArray jsonGrps = jsonDevice.optJSONArray("group");
+			if (null != jsonGrps) {
+				for (int i = 0; i < jsonGrps.length(); i++) {
+					Group grp = wurflFactory.createGroup(jsonGrps.getJSONObject(i), device);
+
+
+					//					groupRepository.saveAndFlush(grp);
+					//					deviceRepository.saveAndFlush(device);
+					//					Device device1 = deviceDao.getEntityManager().find(Device.class, device.getId());
+					Device device1 = deviceRepository.findOne(device.getId());
+					device1.addGroup(grp);
+					//					deviceDao.getEntityManager().persist(grp);
+					//					deviceDao.getEntityManager().flush();
+					deviceRepository.saveAndFlush(device1);
+					//					groupRepository.saveAndFlush(grp);
+
+					System.out.println("grp id = " + grp.getId());
+				}
+			} else {
+				JSONObject jsonGrp = jsonDevice.getJSONObject("group");
+				Group grp = wurflFactory.createGroup(jsonGrp, device);
+
+
+				//				groupRepository.saveAndFlush(grp);
+				//				Device device2 = deviceDao.getEntityManager().find(Device.class, device.getId());
+				Device device2 = deviceRepository.findOne(device.getId());
+				device2.addGroup(grp);
+				grp.setDevice(device2);
+				deviceRepository.saveAndFlush(device2);
+				//				deviceDao.getEntityManager().persist(grp);
+				//				groupRepository.saveAndFlush(grp);
+				System.out.println("grp id = " + grp.getId());
+
+			}
+		}
 	}
 
 	public void refreshDeviceGroups(List<Group> groups) {

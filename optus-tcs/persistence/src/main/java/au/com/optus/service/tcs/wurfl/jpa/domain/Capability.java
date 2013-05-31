@@ -2,6 +2,7 @@ package au.com.optus.service.tcs.wurfl.jpa.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -20,7 +21,11 @@ public class Capability extends AbstractEntity{
 	@Column(name="extension_field2")
 	private String extensionField2;
 
+	//	@OneToOne(orphanRemoval=true)
+	//	@JoinTable(name = "Wurfl_Group_Capability", joinColumns = @JoinColumn(name = "Wurfl_Capability_id", referencedColumnName="id"),
+	//	inverseJoinColumns = @JoinColumn(name = "Wurfl_Group_id", referencedColumnName="id"))
 	@ManyToOne
+	@JoinColumn(name="group_id", insertable=false, updatable=false)
 	private Group group;
 
 	//	@ElementCollection

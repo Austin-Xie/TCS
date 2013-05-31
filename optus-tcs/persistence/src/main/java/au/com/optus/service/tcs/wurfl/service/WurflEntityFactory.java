@@ -2,7 +2,6 @@ package au.com.optus.service.tcs.wurfl.service;
 
 import java.util.Calendar;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -33,6 +32,7 @@ public class WurflEntityFactory {
 
 		device.setDigest("");
 
+		/*
 		if (jsonDevice.has("group")) {
 			JSONArray jsonGrps = jsonDevice.optJSONArray("group");
 			if (null != jsonGrps) {
@@ -45,6 +45,7 @@ public class WurflEntityFactory {
 				device.addGroup(createGroup(jsonGrp, device));
 			}
 		}
+		 */
 
 		return device;
 	}
@@ -54,10 +55,13 @@ public class WurflEntityFactory {
 		Group group = new Group();
 		group.setDevice(device);
 		group.setGroupId(jsonGroup.getString("id"));
+		System.out.println("group id = " + jsonGroup.getString("id"));
 
 		group.setDigest("to be generated");
 		group.setLastUpdatedTime(Calendar.getInstance());
+		group.setJsonCapabilities("Fake");
 
+		/*
 		if (jsonGroup.has("capability")) {
 			JSONArray capaArray = jsonGroup.optJSONArray("capability");
 			if (null != capaArray) {
@@ -76,6 +80,7 @@ public class WurflEntityFactory {
 		} else {
 			group.setJsonCapabilities("");
 		}
+		 */
 
 		return group;
 	}

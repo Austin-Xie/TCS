@@ -4,12 +4,10 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -56,9 +54,9 @@ public class Device extends AbstractEntity {
 	@Column(name = "last_update_source")
 	private String lastUpdateSource;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinTable(name = "Wurfl_Device_Group", joinColumns = @JoinColumn(name = "Wurfl_Device_id"),
-	inverseJoinColumns = @JoinColumn(name = "Wurfl_Group_id"))
+	@OneToMany(orphanRemoval=true, fetch=FetchType.EAGER, cascade = {javax.persistence.CascadeType.ALL})
+	@JoinColumn(name="device_id")
+	@Audited
 	private final Set<Group> groups = new HashSet<Group>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -176,6 +174,7 @@ public class Device extends AbstractEntity {
 
 	public Set<Group> addGroup(Group group) {
 		groups.add(group);
+		group.setDevice(this);
 		return groups;
 	}
 

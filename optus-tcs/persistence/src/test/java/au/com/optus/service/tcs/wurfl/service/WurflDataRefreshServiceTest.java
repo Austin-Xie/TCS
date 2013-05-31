@@ -25,10 +25,11 @@ public class WurflDataRefreshServiceTest {
 	WurflDataRefreshService refreshServcie;
 
 	@Test
+	//	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void testRefreshWurflData() throws FileNotFoundException, IOException, JSONException {
 
 		try {
-			refreshServcie.refreshWurflData(new FileReader(new File("/home/austin/Projects/TCS/wurfl.xml")), "wurfl.xml");
+			refreshServcie.refreshWurflData(new FileReader(new File("/home/austin/Projects/TCS/wurfl_dev.xml")), "wurfl.xml");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
