@@ -32,8 +32,7 @@ public class WurflEntityFactory {
 
 		device.setDigest("");
 
-		/*
-		if (jsonDevice.has("group")) {
+		/*if (jsonDevice.has("group")) {
 			JSONArray jsonGrps = jsonDevice.optJSONArray("group");
 			if (null != jsonGrps) {
 				for (int i = 0; i < jsonGrps.length(); i++) {
@@ -44,8 +43,7 @@ public class WurflEntityFactory {
 				JSONObject jsonGrp = jsonDevice.getJSONObject("group");
 				device.addGroup(createGroup(jsonGrp, device));
 			}
-		}
-		 */
+		}*/
 
 		return device;
 	}
@@ -59,7 +57,7 @@ public class WurflEntityFactory {
 
 		group.setDigest("to be generated");
 		group.setLastUpdatedTime(Calendar.getInstance());
-		group.setJsonCapabilities("Fake");
+		group.setJsonCapabilities(jsonGroup.toString());
 
 		/*
 		if (jsonGroup.has("capability")) {
@@ -88,9 +86,13 @@ public class WurflEntityFactory {
 	Capability createCapability(JSONObject jsonCapability, Group group) throws JSONException {
 
 		Capability capa = new Capability();
+		System.out.println("jsonCapability = " + jsonCapability.toString());
 		capa.setGroup(group);
 		capa.setName(jsonCapability.getString("name"));
-		capa.setValue(jsonCapability.getString("value"));
+		String jsonValue = jsonCapability.optString("value");
+		capa.setValue(jsonValue == null || "".equals(jsonValue) ? "BLANK" : jsonValue);
+
+		capa.setLastUpdatedTime(Calendar.getInstance().getTime());
 
 		return capa;
 	}

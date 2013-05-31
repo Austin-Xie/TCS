@@ -44,7 +44,8 @@ public class Group extends AbstractEntity {
 	//	joinColumns = @JoinColumn(name = "Wurfl_Group_id", referencedColumnName = "id"),
 	//	inverseJoinColumns = @JoinColumn(name = "Wurfl_Device_id",  referencedColumnName="id"))
 	@ManyToOne
-	@JoinColumn(name="device_id") //, updatable=false, insertable=false)
+	@JoinColumn(name="device_id")//, updatable=false, insertable=false)
+	//	@NotAudited
 	private Device device;
 
 	@OneToMany(fetch=FetchType.EAGER, orphanRemoval=true)

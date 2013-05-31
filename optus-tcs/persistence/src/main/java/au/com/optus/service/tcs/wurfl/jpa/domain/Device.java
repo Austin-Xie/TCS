@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.envers.AuditJoinTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
@@ -55,8 +56,9 @@ public class Device extends AbstractEntity {
 	private String lastUpdateSource;
 
 	@OneToMany(orphanRemoval=true, fetch=FetchType.EAGER, cascade = {javax.persistence.CascadeType.ALL})
-	@JoinColumn(name="device_id")
+	@JoinColumn(name="device_id") //, updatable=true, insertable=true)
 	@Audited
+	@AuditJoinTable(name="Wurfl_Device_Group_AUD")
 	private final Set<Group> groups = new HashSet<Group>();
 
 	@ManyToOne(fetch = FetchType.LAZY)

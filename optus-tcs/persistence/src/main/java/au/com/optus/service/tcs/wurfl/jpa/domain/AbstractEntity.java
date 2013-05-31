@@ -1,10 +1,13 @@
 package au.com.optus.service.tcs.wurfl.jpa.domain;
 
+import java.util.Date;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Version;
 
 
 @MappedSuperclass
@@ -14,12 +17,23 @@ public class AbstractEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TCS_WURFL_SEQ")
 	private Long id;
 
+	@Version
+	private Date version;
+
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Date getVersion() {
+		return version;
+	}
+
+	public void setVersion(Date version) {
+		this.version = version;
 	}
 
 	@Override

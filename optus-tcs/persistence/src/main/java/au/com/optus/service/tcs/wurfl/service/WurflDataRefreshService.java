@@ -14,8 +14,11 @@ import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import au.com.optus.service.tcs.wurfl.jpa.dao.DeviceDao;
+import au.com.optus.service.tcs.wurfl.jpa.domain.Capability;
 import au.com.optus.service.tcs.wurfl.jpa.domain.Device;
 import au.com.optus.service.tcs.wurfl.jpa.domain.Group;
 import au.com.optus.service.tcs.wurfl.jpa.domain.WurflSource;
@@ -106,7 +109,7 @@ public class WurflDataRefreshService {
 		return jsonDevices;
 	}
 
-	//	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void refreshWurflData(InputStreamReader xmlStream, String sourceName)
 			throws IOException, JSONException {
 		JSONObject jsonWurfl = this.xmlToJson(xmlStream, sourceName);
@@ -118,71 +121,84 @@ public class WurflDataRefreshService {
 		System.out.println("ws id = " + ws.getId());
 
 		JSONArray jsonDeviceArray = jsonWurfl.getJSONObject("wurfl").optJSONObject("devices").optJSONArray("device");
-		List<Device> devices = new ArrayList<Device>();
 		for (int i = 0; i < jsonDeviceArray.length(); i++) {
 			JSONObject jsonDevice = jsonDeviceArray.getJSONObject(i);
 			Device device = wurflFactory.createDevice(jsonDevice, ws);
 			device = deviceRepository.saveAndFlush(device);
 			refreshDeviceByGroups(device, jsonDevice);
-			assert device != null;
-			//			devices.add(device);
-			//			refreshDevice(device);
-			//			device.getGroups().clear();
-			//			deviceDao.createEntity(device);
-			//			System.out.println("device idd = " + device.getId());
-
-
+			//			assert device != null;
 		}
 
-		//		deviceRepository.save(devices);
-		//		deviceRepository.flush();
-
-		//		List<Group> groups = new ArrayList<Group> ();
-		//		for (Device d1 : devices) {
-		//			System.out.println("group size of device: " + d1.getGroups().size());
-		//			groups.addAll(d1.getGroups());
-		//		}
-		//
-		//		refreshDeviceGroups(groups);
 	}
 
+	//	@Transactional(propagation=Propagation.REQUIRED)
 	public void refreshDeviceByGroups(Device device, JSONObject jsonDevice) throws JSONException {
 		if (jsonDevice.has("group")) {
 			JSONArray jsonGrps = jsonDevice.optJSONArray("group");
+			Device device1 = deviceRepository.findOne(device.getId());
 			if (null != jsonGrps) {
 				for (int i = 0; i < jsonGrps.length(); i++) {
-					Group grp = wurflFactory.createGroup(jsonGrps.getJSONObject(i), device);
-
-
-					//					groupRepository.saveAndFlush(grp);
-					//					deviceRepository.saveAndFlush(device);
-					//					Device device1 = deviceDao.getEntityManager().find(Device.class, device.getId());
-					Device device1 = deviceRepository.findOne(device.getId());
+					JSONObject jsonGroup = jsonGrps.getJSONObject(i);
+					Group grp = wurflFactory.createGroup(jsonGroup, device1);
 					device1.addGroup(grp);
-					//					deviceDao.getEntityManager().persist(grp);
-					//					deviceDao.getEntityManager().flush();
-					deviceRepository.saveAndFlush(device1);
-					//					groupRepository.saveAndFlush(grp);
-
+					grp = groupRepository.saveAndFlush(grp);
+					//					device1 = deviceRepository.saveAndFlush(device1);
 					System.out.println("grp id = " + grp.getId());
+					refreshGroupByCapabilities(grp, jsonGroup);
 				}
 			} else {
 				JSONObject jsonGrp = jsonDevice.getJSONObject("group");
 				Group grp = wurflFactory.createGroup(jsonGrp, device);
-
-
-				//				groupRepository.saveAndFlush(grp);
-				//				Device device2 = deviceDao.getEntityManager().find(Device.class, device.getId());
 				Device device2 = deviceRepository.findOne(device.getId());
 				device2.addGroup(grp);
 				grp.setDevice(device2);
-				deviceRepository.saveAndFlush(device2);
-				//				deviceDao.getEntityManager().persist(grp);
-				//				groupRepository.saveAndFlush(grp);
+				//device2 = deviceRepository.saveAndFlush(device2);
+				grp = groupRepository.saveAndFlush(grp);
 				System.out.println("grp id = " + grp.getId());
+				refreshGroupByCapabilities(grp, jsonGrp);
+				//				Set<Group> groups = device2.getGroups();
+				//				for(Group grp1 : groups) {
+				//					refreshGroupByCapabilities(grp1, jsonGrp);
+				//				}
 
 			}
 		}
+
+	}
+
+	//	@Transactional(propagation=Propagation.REQUIRED)
+	public void refreshGroupByCapabilities(Group group1, JSONObject jsonGroup) throws JSONException {
+		Group group = groupRepository.findOne(group1.getId());
+		if (jsonGroup.has("capability")) {
+			JSONArray capaArray = jsonGroup.optJSONArray("capability");
+			List<Capability> capas = new ArrayList<Capability> ();
+			if (null != capaArray) {
+				group.setJsonCapabilities(capaArray.toString());
+				for (int i = 0; i < capaArray.length(); i++) {
+					Capability capa1 = wurflFactory.createCapability(capaArray.getJSONObject(i), group);
+					//					group.addCapability(capa1);
+					capa1.setGroup(group);
+					capas.add(capa1);
+					//					group = groupRepository.saveAndFlush(group);
+				}
+				capabilityRepository.save(capas);
+				capabilityRepository.flush();
+
+			} else {
+				JSONObject jsonCapa = jsonGroup.getJSONObject("capability");
+				group.setJsonCapabilities(jsonCapa.toString());
+				Capability capa2 = wurflFactory.createCapability(jsonCapa, group);
+				//				group.addCapability(capa2);
+				capa2.setGroup(group);
+				capabilityRepository.saveAndFlush(capa2);
+				//				group = groupRepository.saveAndFlush(group);
+			}
+
+		} else {
+			group.setJsonCapabilities("");
+			group = groupRepository.saveAndFlush(group);
+		}
+
 	}
 
 	public void refreshDeviceGroups(List<Group> groups) {

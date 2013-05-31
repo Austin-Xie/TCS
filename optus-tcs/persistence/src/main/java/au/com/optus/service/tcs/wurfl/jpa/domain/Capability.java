@@ -1,10 +1,14 @@
 package au.com.optus.service.tcs.wurfl.jpa.domain;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.envers.Audited;
 
@@ -25,8 +29,12 @@ public class Capability extends AbstractEntity{
 	//	@JoinTable(name = "Wurfl_Group_Capability", joinColumns = @JoinColumn(name = "Wurfl_Capability_id", referencedColumnName="id"),
 	//	inverseJoinColumns = @JoinColumn(name = "Wurfl_Group_id", referencedColumnName="id"))
 	@ManyToOne
-	@JoinColumn(name="group_id", insertable=false, updatable=false)
+	@JoinColumn(name="group_id") //, insertable=false, updatable=false)
 	private Group group;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="last_updated_time")
+	private Date lastUpdatedTime;
 
 	//	@ElementCollection
 
@@ -68,6 +76,15 @@ public class Capability extends AbstractEntity{
 
 	public void setGroup(Group group) {
 		this.group = group;
+	}
+
+
+	public Date getLastUpdatedTime() {
+		return lastUpdatedTime;
+	}
+
+	public void setLastUpdatedTime(Date lastUpdatedTime) {
+		this.lastUpdatedTime = lastUpdatedTime;
 	}
 
 	@Override
