@@ -29,7 +29,8 @@ public class WurflDataRefreshServiceTest {
 	public void testRefreshWurflData() throws FileNotFoundException, IOException, JSONException {
 
 		try {
-			refreshServcie.refreshWurflData(new FileReader(new File("/home/austin/Projects/TCS/wurfl.xml")), "wurfl.xml");
+//			refreshServcie.refreshWurflData(new FileReader(new File("/home/austin/Projects/TCS/wurfl.xml")), "wurfl.xml");
+			refreshServcie.refreshWurflData(new FileReader(new File("E:/LocalGitHub/TCS/optus-tcs/persistence/src/main/resources/wurfl.xml")), "wurfl.xml");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
