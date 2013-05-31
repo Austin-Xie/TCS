@@ -3,7 +3,6 @@ package au.com.optus.service.tcs.wurfl.service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.zip.ZipInputStream;
@@ -18,11 +17,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import au.com.optus.service.tcs.wurfl.jpa.dao.DeviceDao;
-import au.com.optus.service.tcs.wurfl.jpa.domain.Capability;
 import au.com.optus.service.tcs.wurfl.jpa.domain.Device;
 import au.com.optus.service.tcs.wurfl.jpa.domain.Group;
 import au.com.optus.service.tcs.wurfl.jpa.domain.WurflSource;
-import au.com.optus.service.tcs.wurfl.repository.CapabilityRepository;
 import au.com.optus.service.tcs.wurfl.repository.DeviceRepository;
 import au.com.optus.service.tcs.wurfl.repository.GroupRepository;
 import au.com.optus.service.tcs.wurfl.repository.WurflSourceRepository;
@@ -38,9 +35,6 @@ public class WurflDataRefreshService {
 
 	@Autowired
 	GroupRepository groupRepository;
-
-	@Autowired
-	CapabilityRepository capabilityRepository;
 
 	@Autowired
 	WurflSourceRepository wurflSourcerepository;
@@ -116,9 +110,7 @@ public class WurflDataRefreshService {
 		WurflSource ws = wurflFactory.createWurflSource(jsonWurfl);
 
 		ws.setUpdatedTime(Calendar.getInstance());
-		wurflSourcerepository.save(ws);
-		wurflSourcerepository.flush();
-		System.out.println("ws id = " + ws.getId());
+		wurflSourcerepository.saveAndFlush(ws);
 
 		JSONArray jsonDeviceArray = jsonWurfl.getJSONObject("wurfl").optJSONObject("devices").optJSONArray("device");
 		for (int i = 0; i < jsonDeviceArray.length(); i++) {
@@ -171,27 +163,15 @@ public class WurflDataRefreshService {
 		Group group = groupRepository.findOne(group1.getId());
 		if (jsonGroup.has("capability")) {
 			JSONArray capaArray = jsonGroup.optJSONArray("capability");
-			List<Capability> capas = new ArrayList<Capability> ();
 			if (null != capaArray) {
 				group.setJsonCapabilities(capaArray.toString());
-				for (int i = 0; i < capaArray.length(); i++) {
-					Capability capa1 = wurflFactory.createCapability(capaArray.getJSONObject(i), group);
-					//					group.addCapability(capa1);
-					capa1.setGroup(group);
-					capas.add(capa1);
-					//					group = groupRepository.saveAndFlush(group);
-				}
-				capabilityRepository.save(capas);
-				capabilityRepository.flush();
+
+				groupRepository.saveAndFlush(group);
 
 			} else {
 				JSONObject jsonCapa = jsonGroup.getJSONObject("capability");
 				group.setJsonCapabilities(jsonCapa.toString());
-				Capability capa2 = wurflFactory.createCapability(jsonCapa, group);
-				//				group.addCapability(capa2);
-				capa2.setGroup(group);
-				capabilityRepository.saveAndFlush(capa2);
-				//				group = groupRepository.saveAndFlush(group);
+				groupRepository.saveAndFlush(group);
 			}
 
 		} else {

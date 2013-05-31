@@ -2,8 +2,6 @@ package au.com.optus.service.tcs.wurfl.jpa.domain;
 
 
 import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -11,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
@@ -39,21 +36,10 @@ public class Group extends AbstractEntity {
 	@Column(name="last_updated_time")
 	private Calendar lastUpdatedTime;
 
-
-	//	@JoinTable(name = "Wurfl_Device_Group",
-	//	joinColumns = @JoinColumn(name = "Wurfl_Group_id", referencedColumnName = "id"),
-	//	inverseJoinColumns = @JoinColumn(name = "Wurfl_Device_id",  referencedColumnName="id"))
 	@ManyToOne
 	@JoinColumn(name="device_id")//, updatable=false, insertable=false)
 	//	@NotAudited
 	private Device device;
-
-	@OneToMany(fetch=FetchType.EAGER, orphanRemoval=true)
-	//	@JoinTable(name = "Wurfl_Group_Capability", joinColumns = @JoinColumn(name = "Wurfl_Group_id", referencedColumnName="id"),
-	//	inverseJoinColumns = @JoinColumn(name = "Wurfl_Capability_id", referencedColumnName="id"))
-	@JoinColumn(name="group_id")
-	@Audited
-	private final Set<Capability> capabilities = new HashSet<Capability> ();
 
 	public String getGroupId() {
 		return groupId;
@@ -109,21 +95,6 @@ public class Group extends AbstractEntity {
 
 	public void setDevice(Device device) {
 		this.device = device;
-	}
-
-	public Set<Capability> getCapabilities() {
-		return capabilities;
-	}
-
-	public Set<Capability> addCapability(Capability capability) {
-		capability.setGroup(this);
-		capabilities.add(capability);
-		return capabilities;
-	}
-
-	public Set<Capability> removeCapability(Capability capability) {
-		capabilities.remove(capability);
-		return capabilities;
 	}
 
 	@Override

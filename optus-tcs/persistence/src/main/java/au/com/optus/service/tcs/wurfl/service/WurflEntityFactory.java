@@ -6,7 +6,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-import au.com.optus.service.tcs.wurfl.jpa.domain.Capability;
 import au.com.optus.service.tcs.wurfl.jpa.domain.Device;
 import au.com.optus.service.tcs.wurfl.jpa.domain.Group;
 import au.com.optus.service.tcs.wurfl.jpa.domain.WurflSource;
@@ -81,20 +80,6 @@ public class WurflEntityFactory {
 		 */
 
 		return group;
-	}
-
-	Capability createCapability(JSONObject jsonCapability, Group group) throws JSONException {
-
-		Capability capa = new Capability();
-		System.out.println("jsonCapability = " + jsonCapability.toString());
-		capa.setGroup(group);
-		capa.setName(jsonCapability.getString("name"));
-		String jsonValue = jsonCapability.optString("value");
-		capa.setValue(jsonValue == null || "".equals(jsonValue) ? "BLANK" : jsonValue);
-
-		capa.setLastUpdatedTime(Calendar.getInstance().getTime());
-
-		return capa;
 	}
 
 	WurflSource createWurflSource(JSONObject jsonWurfl) {
